@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Brandon Lejune – Portfolio</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@400;600;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#EEF2F6; --surface:#FFFFFF; --ink:#14213D; --muted:#51607A; --line:#CFD8E3;
+  --accent:#2B50E6; --code-bg:#0F1B33; --code-ink:#DCE6FA; --code-muted:#8EA2C8;
+  box-sizing:border-box; padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){--bg:#0B1220;--surface:#131D33;--ink:#E8EEFB;--muted:#9AAAC7;--line:#26344F;--accent:#7C9BFF;--code-bg:#070D19;}
+}
+:root[data-theme="dark"]{--bg:#0B1220;--surface:#131D33;--ink:#E8EEFB;--muted:#9AAAC7;--line:#26344F;--accent:#7C9BFF;--code-bg:#070D19;}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:400 1.05rem/1.6 "Bricolage Grotesque",system-ui,sans-serif}
+main{max-width:860px;margin:0 auto;padding:3.5rem 1.25rem 4rem}
+h1{font-size:clamp(2.4rem,7vw,4.2rem);line-height:1.05;font-weight:800;letter-spacing:-.03em;margin:0 0 1rem}
+h2{font-size:1.5rem;font-weight:600;margin:4rem 0 1.25rem;letter-spacing:-.01em}
+p{margin:0 0 1rem;max-width:62ch}
+a{color:var(--accent)}
+a:focus-visible,button:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.lede{font-size:1.25rem;color:var(--muted)}
+.links{display:flex;flex-wrap:wrap;gap:.75rem;margin:1.5rem 0 2.5rem}
+.btn{display:inline-block;padding:.6rem 1.1rem;border:1.5px solid var(--ink);border-radius:6px;color:var(--ink);text-decoration:none;font-weight:600}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:#fff}
+.snippet{border-radius:10px;overflow:hidden;background:var(--code-bg);color:var(--code-ink)}
+.tabs{display:flex;align-items:center;gap:.25rem;padding:.5rem .75rem;border-bottom:1px solid rgba(255,255,255,.1);overflow-x:auto}
+.tab{font:500 .85rem "JetBrains Mono",ui-monospace,monospace;background:none;border:0;color:var(--code-muted);padding:.35rem .6rem;border-radius:5px;cursor:pointer;white-space:nowrap}
+.tab[aria-selected="true"]{background:rgba(255,255,255,.12);color:#fff}
+.copy{margin-left:auto;font:500 .8rem "JetBrains Mono",ui-monospace,monospace;background:none;border:1px solid rgba(255,255,255,.25);color:var(--code-ink);padding:.3rem .6rem;border-radius:5px;cursor:pointer}
+pre{margin:0;padding:1rem 1.1rem;overflow-x:auto;font:400 .88rem/1.65 "JetBrains Mono",ui-monospace,monospace;tab-size:2}
+.note{padding:.55rem 1.1rem;border-top:1px solid rgba(255,255,255,.1);font-size:.9rem;color:var(--code-muted)}
+.project{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:1.5rem;margin-bottom:1.75rem}
+.project h3{margin:0 0 .35rem;font-size:1.3rem}
+.tags{display:flex;flex-wrap:wrap;gap:.4rem;margin:.75rem 0 1.25rem;padding:0;list-style:none}
+.tags li{font:500 .8rem "JetBrains Mono",ui-monospace,monospace;border:1px solid var(--line);border-radius:999px;padding:.15rem .65rem;color:var(--muted)}
+.skills{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:1rem 2rem}
+.skills dt{font-weight:600}.skills dd{margin:0;color:var(--muted)}
+footer{margin-top:4rem;color:var(--muted);font-size:.95rem}
+</style>
+</head>
+<body>
+<main>
+  <header>
+    <h1>Hi, I’m Brandon Lejune.</h1>
+    <p class="lede">Computer Science and Game Design student at DigiPen, looking for a software engineering internship. I build engine and gameplay systems in C++ and C#.</p>
+    <div class="links">
+      <a class="btn primary" href="mailto:brlej2018@yahoo.com">Email me</a>
+      <a class="btn" href="https://example.com/your-resume.pdf">Resume (PDF)</a>
+      <a class="btn" href="https://www.linkedin.com/in/brandon-lejune-02a049444/">LinkedIn</a>
+    </div>
+    <div id="hero-snippet"></div>
+  </header>
+
+  <h2>Projects</h2>
+  <section id="projects"></section>
+
+  <h2>About</h2>
+  <p>I’m working toward a B.S. in Computer Science and Game Design at DigiPen Institute of Technology (expected Spring 2028). Coursework includes Data Structures, AI for Games, Operating Systems, and Advanced C/C++. Since 2022 I’ve also worked as a Petshotel Experience Lead at PetSmart, coordinating a team of 4–7.</p>
+
+  <h2>Skills</h2>
+  <dl class="skills">
+    <div><dt>Programming</dt><dd>C, C++, C#, Unreal Engine Blueprints</dd></div>
+    <div><dt>Engines and tools</dt><dd>Unity, Unreal Engine 5, OpenGL, Visual Studio</dd></div>
+    <div><dt>Development</dt><dd>Procedural generation, gameplay systems, systems design, C++ memory management, STL</dd></div>
+    <div><dt>Version control</dt><dd>GitHub, Perforce P4V</dd></div>
+  </dl>
+
+  <footer>© Brandon Lejune · Bothell, WA</footer>
+</main>
+
+<script>
+/* ===== EDIT THIS SECTION =====
+   Each project has a title, summary, tags, links and one or more code snippets.
+   Add a snippet by adding another { label, lang, note, code } object. */
+const HERO = {
+  snippets: [{ label: "walker.cpp", note: "Placeholder: replace with your own code from the GoblinMan repo.",
+    code: "// Randomized walker: carve floor tiles while stepping in random directions\nvoid CarveDungeon(Grid& grid, int steps)\n{\n    Point pos = grid.Center();\n    for (int i = 0; i < steps; ++i)\n    {\n        grid.SetFloor(pos);\n        pos = grid.Clamp(pos + RandomDirection());\n    }\n}" }]
+};
+
+const PROJECTS = [
+  {
+    title: "GoblinMan",
+    summary: "A 2D dungeon crawler on a custom C++/OpenGL engine. As build master and engine programmer, I built the scene system, a procedural dungeon generator, and a data-driven entity factory, and coordinated weekly playable builds.",
+    tags: ["C++", "OpenGL", "Procedural generation"],
+    links: [],
+    snippets: [
+      { label: "walker.cpp", note: "Placeholder: swap in your real generator code. Explain the idea in one line.",
+        code: "void CarveDungeon(Grid& grid, int steps)\n{\n    Point pos = grid.Center();\n    for (int i = 0; i < steps; ++i)\n    {\n        grid.SetFloor(pos);\n        pos = grid.Clamp(pos + RandomDirection());\n    }\n}" },
+      { label: "scene.h", note: "Placeholder: swap in your real scene system, e.g. how layers like UI, gameplay and pause menus are managed.",
+        code: "class Scene\n{\npublic:\n    virtual ~Scene() = default;\n    virtual void Load() = 0;\n    virtual void Update(float dt) = 0;\n    virtual void Draw() = 0;\n    virtual void Unload() = 0;\n};" }
+    ]
+  },
+  {
+    title: "Combat System",
+    summary: "The backend of a Unity combat system built on a given framework. It manages enemy encounters and combat waves, and records per-playthrough data (AI performance ratings, difficulty variations, ability usage) for playtesting and AI balancing.",
+    tags: ["C#", "Unity", "AI balancing"],
+    links: [],
+    snippets: [
+      { label: "WaveManager.cs", note: "Placeholder: swap in your real wave or data-collection code.",
+        code: "public class WaveManager : MonoBehaviour\n{\n    [SerializeField] List<Wave> waves;\n    int current;\n\n    public void StartNextWave()\n    {\n        if (current < waves.Count)\n            Spawn(waves[current++]);\n    }\n}" }
+    ]
+  }
+];
+/* ===== END EDIT SECTION ===== */
+
+function el(tag, attrs = {}, ...kids) {
+  const n = document.createElement(tag);
+  for (const [k, v] of Object.entries(attrs)) k === "text" ? n.textContent = v : n.setAttribute(k, v);
+  kids.forEach(c => n.append(c));
+  return n;
+}
+
+function snippetBlock(snippets) {
+  const box = el("div", { class: "snippet" });
+  const tabs = el("div", { class: "tabs", role: "tablist" });
+  const pre = el("pre"); const code = el("code"); pre.append(code);
+  const note = el("div", { class: "note" });
+  const copy = el("button", { class: "copy", type: "button", text: "Copy" });
+  let current = 0;
+
+  function show(i) {
+    current = i;
+    code.textContent = snippets[i].code;
+    note.textContent = snippets[i].note || "";
+    note.hidden = !snippets[i].note;
+    tabs.querySelectorAll(".tab").forEach((t, j) => t.setAttribute("aria-selected", j === i));
+  }
+  snippets.forEach((s, i) => {
+    const t = el("button", { class: "tab", type: "button", role: "tab", text: s.label });
+    t.addEventListener("click", () => show(i));
+    tabs.append(t);
+  });
+  copy.addEventListener("click", async () => {
+    try { await navigator.clipboard.writeText(snippets[current].code); copy.textContent = "Copied"; }
+    catch (e) { copy.textContent = "Copy failed"; }
+    setTimeout(() => copy.textContent = "Copy", 1500);
+  });
+  tabs.append(copy);
+  box.append(tabs, pre, note);
+  show(0);
+  return box;
+}
+
+document.getElementById("hero-snippet").append(snippetBlock(HERO.snippets));
+
+const list = document.getElementById("projects");
+PROJECTS.forEach(p => {
+  const card = el("article", { class: "project" },
+    el("h3", { text: p.title }),
+    el("p", { text: p.summary }),
+    (() => { const ul = el("ul", { class: "tags" }); p.tags.forEach(t => ul.append(el("li", { text: t }))); return ul; })(),
+    snippetBlock(p.snippets)
+  );
+  const links = el("p", { style: "margin-top:1rem" });
+  p.links.forEach(l => links.append(el("a", { href: l.href, text: l.text })));
+  card.append(links);
+  list.append(card);
+});
+</script>
+</body>
+</html>
