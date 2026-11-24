@@ -51,7 +51,7 @@ footer{margin-top:4rem;color:var(--muted);font-size:.95rem}
     <h1>Hi, I’m Brandon Lejune.</h1>
     <p class="lede">Computer Science and Game Design student at DigiPen, looking for a software engineering internship. I build engine and gameplay systems in C++ and C#.</p>
     <div class="links">
-      <a class="btn primary" href="mailto:brlej2018@yahoo.com">brlej2018@yahoo.com</a>
+      <a class="btn primary" href="mailto:brlej2018@yahoo.com">Email me</a>
       <a class="btn" href="Brandon_Lejune_Resume.pdf">Resume (PDF)</a>
       <a class="btn" href="https://www.linkedin.com/in/brandon-lejune-02a049444/">LinkedIn</a>
     </div>
@@ -79,6 +79,8 @@ footer{margin-top:4rem;color:var(--muted);font-size:.95rem}
 /* ===== EDIT THIS SECTION =====
    Each project has a title, summary, tags, links and one or more code snippets.
    Add a snippet by adding another { label, lang, note, code } object. */
+const SHOW_SNIPPETS = false; // change to true to show the code snippet boxes again
+
 const HERO = {
   snippets: [{ label: "walker.cpp", note: "Placeholder: replace with your own code from the GoblinMan repo.",
     code: "// Randomized walker: carve floor tiles while stepping in random directions\nvoid CarveDungeon(Grid& grid, int steps)\n{\n    Point pos = grid.Center();\n    for (int i = 0; i < steps; ++i)\n    {\n        grid.SetFloor(pos);\n        pos = grid.Clamp(pos + RandomDirection());\n    }\n}" }]
@@ -118,6 +120,7 @@ function el(tag, attrs = {}, ...kids) {
 }
 
 function snippetBlock(snippets) {
+  if (!SHOW_SNIPPETS || !snippets.length) return document.createDocumentFragment();
   const box = el("div", { class: "snippet" });
   const tabs = el("div", { class: "tabs", role: "tablist" });
   const pre = el("pre"); const code = el("code"); pre.append(code);
@@ -160,7 +163,7 @@ PROJECTS.forEach(p => {
   );
   const links = el("p", { style: "margin-top:1rem" });
   p.links.forEach(l => links.append(el("a", { href: l.href, text: l.text })));
-  card.append(links);
+  if (p.links.length) card.append(links);
   list.append(card);
 });
 </script>
