@@ -9,13 +9,13 @@
 <style>
 :root{
   --bg:#EEF2F6; --surface:#FFFFFF; --ink:#14213D; --muted:#51607A; --line:#CFD8E3;
-  --accent:#2B50E6; --code-bg:#0F1B33; --code-ink:#DCE6FA; --code-muted:#8EA2C8;
+  --accent:#2B50E6; --code-bg:#1E1E1E; --code-ink:#DCDCDC; --code-muted:#9A9A9A;
   box-sizing:border-box; padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px);
 }
 @media (prefers-color-scheme: dark){
-  :root:not([data-theme="light"]){--bg:#0B1220;--surface:#131D33;--ink:#E8EEFB;--muted:#9AAAC7;--line:#26344F;--accent:#7C9BFF;--code-bg:#070D19;}
+  :root:not([data-theme="light"]){--bg:#0B1220;--surface:#131D33;--ink:#E8EEFB;--muted:#9AAAC7;--line:#26344F;--accent:#7C9BFF;--code-bg:#141414;}
 }
-:root[data-theme="dark"]{--bg:#0B1220;--surface:#131D33;--ink:#E8EEFB;--muted:#9AAAC7;--line:#26344F;--accent:#7C9BFF;--code-bg:#070D19;}
+:root[data-theme="dark"]{--bg:#0B1220;--surface:#131D33;--ink:#E8EEFB;--muted:#9AAAC7;--line:#26344F;--accent:#7C9BFF;--code-bg:#141414;}
 html{scroll-padding-top:env(safe-area-inset-top,0px)}
 *{box-sizing:border-box}
 body{margin:0;background:var(--bg);color:var(--ink);font:400 1.05rem/1.6 "Bricolage Grotesque",system-ui,sans-serif}
@@ -35,6 +35,7 @@ a:focus-visible,button:focus-visible{outline:3px solid var(--accent);outline-off
 .tab[aria-selected="true"]{background:rgba(255,255,255,.12);color:#fff}
 .copy{margin-left:auto;font:500 .8rem "JetBrains Mono",ui-monospace,monospace;background:none;border:1px solid rgba(255,255,255,.25);color:var(--code-ink);padding:.3rem .6rem;border-radius:5px;cursor:pointer}
 pre{margin:0;padding:1rem 1.1rem;overflow-x:auto;font:400 .88rem/1.65 "JetBrains Mono",ui-monospace,monospace;tab-size:2}
+.tk-c{color:#57A64A}.tk-s{color:#D69D85}.tk-n{color:#B5CEA8}.tk-k{color:#569CD6}.tk-t{color:#4EC9B0}.tk-f{color:#DCDCAA}.tk-p{color:#9B9B9B}
 .note{padding:.55rem 1.1rem;border-top:1px solid rgba(255,255,255,.1);font-size:.9rem;color:var(--code-muted)}
 .project{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:1.5rem;margin-bottom:1.75rem}
 .project h3{margin:0 0 .35rem;font-size:1.3rem}
@@ -212,6 +213,33 @@ function el(tag, attrs = {}, ...kids) {
   return n;
 }
 
+const KEYWORDS = new Set(("alignas auto bool break case catch char class const constexpr continue default delete do double else enum explicit extern false final float for friend goto if inline int long namespace new noexcept nullptr operator override private protected public return short signed sizeof static static_cast struct switch template this throw true try typedef typename union unsigned using virtual void volatile while "
+  + "abstract as base byte decimal event foreach in interface internal is lock null object out params readonly ref sealed string uint ulong var").split(" "));
+
+function escapeHtml(t) { return t.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;"); }
+
+/* Small C/C++/C# highlighter using Visual Studio's dark colors */
+function highlight(src) {
+  const re = /(\/\*[\s\S]*?\*\/|\/\/[^\n]*)|("(?:\\.|[^"\\\n])*"|'(?:\\.|[^'\\\n])*')|(^[ \t]*#\w+[^\n]*)|(\b\d+\.?\d*f?\b)|(\b[A-Za-z_]\w*\b)/gm;
+  let out = "", last = 0, m;
+  while ((m = re.exec(src)) !== null) {
+    out += escapeHtml(src.slice(last, m.index));
+    last = m.index + m[0].length;
+    const text = escapeHtml(m[0]);
+    const rest = src.slice(last);
+    let cls = "";
+    if (m[1]) cls = "tk-c";
+    else if (m[2]) cls = "tk-s";
+    else if (m[3]) cls = "tk-p";
+    else if (m[4]) cls = "tk-n";
+    else if (KEYWORDS.has(m[5])) cls = "tk-k";
+    else if (/^\s*\(/.test(rest)) cls = "tk-f";
+    else if (/^[A-Z][a-z]/.test(m[5]) || /^\s*</.test(rest) && /^[a-z_]+$/.test(m[5]) && /^(vector|map|unordered_map|set|array|shared_ptr|unique_ptr|pair)$/.test(m[5])) cls = "tk-t";
+    out += cls ? '<span class="' + cls + '">' + text + "</span>" : text;
+  }
+  return out + escapeHtml(src.slice(last));
+}
+
 function snippetBlock(snippets) {
   if (!SHOW_SNIPPETS || !snippets.length) return document.createDocumentFragment();
   const box = el("div", { class: "snippet" });
@@ -223,7 +251,7 @@ function snippetBlock(snippets) {
 
   function show(i) {
     current = i;
-    code.textContent = snippets[i].code;
+    code.innerHTML = highlight(snippets[i].code);
     note.textContent = snippets[i].note || "";
     note.hidden = !snippets[i].note;
     tabs.querySelectorAll(".tab").forEach((t, j) => t.setAttribute("aria-selected", j === i));
