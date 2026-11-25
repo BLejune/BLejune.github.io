@@ -97,6 +97,7 @@ const PROJECTS = [
     meta: "Build Master & Engine Programmer · Team of 5 · Fall 2025 – Spring 2026",
     summary: "A 2D dungeon crawler on a custom C++/OpenGL engine. As build master and engine programmer, I built the scene system, a procedural dungeon generator, and a data-driven entity factory, and coordinated weekly playable builds.",
     tags: ["C++", "OpenGL", "Procedural generation"],
+    extra: ["One challenge I had to overcome was figuring out how much abstraction each system needed. I wanted every system to be modular and self-contained, with a clear interface, so my teammates could use and build on them without needing to know how they worked on the inside. To do that, I made an abstract base System class that uses inheritance and virtual functions to give every system the same interface. Each system handles its own work, and the project stays consistent."],
     links: [],
     snippets: [
       { label: "SceneSystem.h", note: "Each scene has a policy for whether it updates or renders, so layers like a pause menu can sit on top of gameplay. Stack changes are queued.",
@@ -212,6 +213,7 @@ void RoomSystem::GenerateDungeon(int width, int height, int steps) {
     meta: "Solo project · Spring 2026",
     summary: "Expanded on a given framework, adding two player resources and five player abilities, and focusing on efficient management of enemy encounters and combat waves. Implemented per-playthrough data collection, along with smart and random auto-play, to support AI balancing, tracking AI performance ratings, difficulty variations, and ability usage.",
     tags: ["C#", "Unity", "Playtesting", "AI balancing"],
+    extra: ["Smart mode takes in certain values from the game and uses the ability best suited to the situation. If the player’s health is low, it activates the shield, and if it sees the enemy is close, it uses the ability that has knockback."],
     links: [],
     snippets: []
   }
@@ -311,6 +313,7 @@ PROJECTS.forEach(p => {
     el("h3", { text: p.title }),
     el("p", { class: "meta", text: p.meta || "" }),
     el("p", { text: p.summary }),
+    ...(p.extra || []).map(t => el("p", { text: t })),
     (() => { const ul = el("ul", { class: "tags" }); p.tags.forEach(t => ul.append(el("li", { text: t }))); return ul; })(),
     collapsible(p.snippets)
   );
