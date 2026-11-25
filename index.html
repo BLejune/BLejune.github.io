@@ -79,12 +79,9 @@ footer{margin-top:4rem;color:var(--muted);font-size:.95rem}
 /* ===== EDIT THIS SECTION =====
    Each project has a title, summary, tags, links and one or more code snippets.
    Add a snippet by adding another { label, lang, note, code } object. */
-const SHOW_SNIPPETS = false; // change to true to show the code snippet boxes again
+const SHOW_SNIPPETS = true; // set to false to hide all code snippet boxes
 
-const HERO = {
-  snippets: [{ label: "walker.cpp", note: "Placeholder: replace with your own code from the GoblinMan repo.",
-    code: "// Randomized walker: carve floor tiles while stepping in random directions\nvoid CarveDungeon(Grid& grid, int steps)\n{\n    Point pos = grid.Center();\n    for (int i = 0; i < steps; ++i)\n    {\n        grid.SetFloor(pos);\n        pos = grid.Clamp(pos + RandomDirection());\n    }\n}" }]
-};
+const HERO = { snippets: [] };
 
 const PROJECTS = [
   {
@@ -93,10 +90,109 @@ const PROJECTS = [
     tags: ["C++", "OpenGL", "Procedural generation"],
     links: [],
     snippets: [
-      { label: "walker.cpp", note: "Placeholder: swap in your real generator code. Explain the idea in one line.",
-        code: "void CarveDungeon(Grid& grid, int steps)\n{\n    Point pos = grid.Center();\n    for (int i = 0; i < steps; ++i)\n    {\n        grid.SetFloor(pos);\n        pos = grid.Clamp(pos + RandomDirection());\n    }\n}" },
-      { label: "scene.h", note: "Placeholder: swap in your real scene system, e.g. how layers like UI, gameplay and pause menus are managed.",
-        code: "class Scene\n{\npublic:\n    virtual ~Scene() = default;\n    virtual void Load() = 0;\n    virtual void Update(float dt) = 0;\n    virtual void Draw() = 0;\n    virtual void Unload() = 0;\n};" }
+      { label: "SceneSystem.h", note: "Each scene has a policy for whether it updates or renders, so layers like a pause menu can sit on top of gameplay. Stack changes are queued.",
+        code: `/******************************************************************************
+*                                SceneSystem.h                                *
+*******************************************************************************
+* Author: Brandon Lejune                                                      *
+* Project Information: Fall 2025, GAM-200, Team Goblindegoob                  *
+* Copyright: @ 2025 DigiPen (USA) Corporation                                 *
+******************************************************************************/
+
+struct ScenePolicy {
+	bool updates = false;
+	bool renders = false;
+	bool updatefromScene = false;
+};
+
+class SceneSystem : public BaseSystem {
+public:
+	// ... omitted ...
+
+	//Scene Policy Getters/Setter
+	static bool CanUpdate(SceneID id) { return policies[id].updates; }
+	static bool CanRender(SceneID id) { return policies[id].renders; }
+	static bool CanUpdateFromScene(SceneID id) { return policies[id].updatefromScene; }
+	static void SetPolicy(SceneID id, ScenePolicy p) { policies[id] = p; }
+
+	//Queued stack changes, applied at the start of SUpdate
+	static void QueuePush(SceneID id) { pendingPushId = id; pendingPush = true; pendingPushBehind = false; }
+	static void QueuePushBehind(SceneID id) { pendingPushId = id; pendingPush = true; pendingPushBehind = true; }
+	static void QueuePop() { pendingPop = true; }
+
+	// ... omitted ...
+};` },
+      { label: "SceneSystem.cpp", note: "Queued pushes and pops are applied at the start of the frame, so a scene can request a change safely while scenes are updating.",
+        code: `/******************************************************************************
+*                                SceneSystem.cpp                              *
+*******************************************************************************
+* Author: Brandon Lejune                                                      *
+* Project Information: Fall 2025, GAM-200, Team Goblindegoob                  *
+* Copyright: @ 2025 DigiPen (USA) Corporation                                 *
+******************************************************************************/
+
+void SceneSystem::SUpdate(float dt) {
+	if (pendingPop) {
+		Pop();
+		SoundSystem::UpdateOnSceneChange();
+		pendingPop = false;
+	}
+	// ... pending erase and restart handling omitted ...
+	if (pendingPush) {
+		pendingPushBehind ? PushBehind(pendingPushId) : Push(pendingPushId);
+		pendingPush = false;
+	}
+
+	for (SceneID id : sceneStack) {
+		if (SceneSystem::CanUpdateFromScene(id)) {
+			registeredscenes.at(id)->S_Update(dt);
+		}
+	}
+}
+
+void SceneSystem::Push(SceneID id) {
+	sceneStack.push_back(id);
+	auto scene = registeredscenes.at(id);
+	scene->S_Init();
+}` },
+      { label: "RoomSystem.cpp", note: "A randomized walker starts at the center of a grid and steps in random directions, carving floor tiles to create varied dungeon layouts.",
+        code: `/******************************************************************************
+*                                RoomSystem.cpp                               *
+*******************************************************************************
+* Author: Brandon Lejune                                                      *
+* Project Information: Fall 2025, GAM-200, Team Goblindegoob                  *
+* Copyright: @ 2025 DigiPen (USA) Corporation                                 *
+******************************************************************************/
+
+void RoomSystem::GenerateDungeon(int width, int height, int steps) {
+	std::vector<std::vector<char>> map(height, std::vector<char>(width, '#'));
+	int x = width / 2;
+	int y = height / 2;
+	int dir = 0;
+
+	//rand direc; 0 up, 1 down, 2 left, 3 right
+
+	for (int i = 0; i < steps; ++i) {
+		map[y][x] = '.';
+
+		dir = std::rand() % 4;
+		
+		if (dir == 0 && y > 1) { y--; }
+		else if (dir == 1 && y < height - 2) { y++; }
+		else if (dir == 2 && x > 1) { x--; }
+		else if (dir == 3 && x < width - 2) { x++; }
+
+	}
+
+	for (const auto& row : map) {
+		for (char c : row) {
+			std::cout << c << " ";
+		}
+		std::cout << "\\n";
+	}
+
+	std::cout << "\\n";
+}` }
     ]
   },
   {
@@ -104,10 +200,7 @@ const PROJECTS = [
     summary: "The backend of a Unity combat system built on a given framework. It manages enemy encounters and combat waves, and records per-playthrough data (AI performance ratings, difficulty variations, ability usage) for playtesting and AI balancing.",
     tags: ["C#", "Unity", "AI balancing"],
     links: [],
-    snippets: [
-      { label: "WaveManager.cs", note: "Placeholder: swap in your real wave or data-collection code.",
-        code: "public class WaveManager : MonoBehaviour\n{\n    [SerializeField] List<Wave> waves;\n    int current;\n\n    public void StartNextWave()\n    {\n        if (current < waves.Count)\n            Spawn(waves[current++]);\n    }\n}" }
-    ]
+    snippets: []
   }
 ];
 /* ===== END EDIT SECTION ===== */
